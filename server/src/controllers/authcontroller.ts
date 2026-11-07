@@ -1,4 +1,6 @@
-
+//ten plik to kontroler autoryzacji i autentyfikacji - obsługa endpointów po stronie backendu
+//logowanie, rejestracja, /me, wylogowanie
+//wspolpracuje z bazą danych
 
 //potrzebne importy
 import type { Request, Response } from "express";
