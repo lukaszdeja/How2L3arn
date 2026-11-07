@@ -24,5 +24,5 @@ export const registerPattern = z.object({
 
 export const loginPattern = z.object({
     email: z.email().transform((chr) => chr.toLowerCase()),
-    password: z.string().min(8)
+    password: z.string().min(1)
 });

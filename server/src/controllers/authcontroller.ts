@@ -4,8 +4,8 @@
 
 //potrzebne importy
 import type { Request, Response } from "express";
-import { bcrypt } from "bcrypt";
-import { jwt } from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { ObjectId, MongoServerError } from "mongodb";
 import { z } from "zod";
 import { env } from "../config/checkenv.js";
@@ -49,7 +49,7 @@ export async function register(req: Request, res: Response) {
     //tworzymy obiekt uzytkownika ktory zapiszemy w bazie danych
     const user : User = {
         email,
-        passwordHash: await bcrypt.hash(password, 12); //12 rund szyfrowania, wolniej ale bezpieczniej
+        passwordHash: await bcrypt.hash(password, 12), //12 rund szyfrowania, wolniej ale bezpieczniej
         name,
         surname,
         role,
@@ -121,9 +121,9 @@ export function logout(_req: Request, res: Response) {
 
 //endpoint /me - ponowne uwierzytelnianie i autoryzacja
 export async function me(req: Request, res: Response) {
-    const user = await usersCollection().findOne({ _id: new ObjectId(req.user!.id) });
-    if (!user || user.isBlocked) { 
+    const user = await userCollection().findOne({ _id: new ObjectId(req.user!.id) });
+    if (!user || !user.isActive) { 
         return res.status(401).json({ error: "Niezalogowano" });
     }
-    res.json(toPublicUser(user));
+    res.json(getUserSimple(user));
 }

@@ -3,7 +3,7 @@
 
 import { Router } from "express";
 import { register, login, logout, me } from "../controllers/authcontroller.js";
-import { requireRole } from "../middleware/auth.js";
+import { authenticate } from "../middleware/auth.js";
 
 //router - trasuje endpointy
 export const authRouter = Router();
@@ -12,4 +12,4 @@ export const authRouter = Router();
 authRouter.post("/register", register);
 authRouter.post("/login", login);
 authRouter.post("/logout", logout);
-authRouter.get("/me", requireRole, me);
+authRouter.get("/me", authenticate, me);

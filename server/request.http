@@ -1,0 +1,61 @@
+@base = http://localhost:3000/api
+
+### 1. Rejestracja ucznia → 201
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{ "email": "uczen@test.pl", "password": "Haslo123!", "name": "Jan", "surname": "Kowalski", "role": "uczeń" }
+
+### 2. Rejestracja korepetytora → 201
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{ "email": "korepetytor@test.pl", "password": "Haslo123!", "name": "Anna", "surname": "Nowak", "role": "korepetytor" }
+
+### 3. Słabe hasło → 400 z listą brakujących wymagań
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{ "email": "slabe@test.pl", "password": "abc", "name": "Ewa", "surname": "Test", "role": "uczeń" }
+
+### 4. Próba rejestracji jako admin → 400
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{ "email": "haker@test.pl", "password": "Haslo123!", "name": "Haker", "surname": "Test", "role": "administrator" }
+
+### 5. Ten sam e-mail wielkimi literami → 409
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{ "email": "UCZEN@test.pl", "password": "Haslo123!", "name": "Jan", "surname": "Kowalski", "role": "uczeń" }
+
+### 6. Złe hasło → 401
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "uczen@test.pl", "password": "ZleHaslo1!" }
+
+### 7. Nieistniejący e-mail → 401 (ten sam komunikat co wyżej)
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "nikt@test.pl", "password": "Haslo123!" }
+
+### 8. Logowanie → 200
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "uczen@test.pl", "password": "Haslo123!" }
+
+### 9. Kim jestem → 200 z danymi ucznia
+GET {{base}}/auth/me
+
+### 10. Wylogowanie → 204
+POST {{base}}/auth/logout
+
+### 11. Kim jestem po wylogowaniu → 401
+GET {{base}}/auth/me
+
+### 12. Nieistniejący endpoint → 404 (JSON)
+GET {{base}}/nie-ma-takiego

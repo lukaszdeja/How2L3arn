@@ -3,7 +3,7 @@
 //importujemy framework express na którym chodzi aplikacja oraz parser ciasteczek
 import express, { type Request, type Response, type NextFunction } from "express";
 import cookieParser from "cookie-parser";
-import authRouter from "./routes/authroutes.js";
+import { authRouter } from "./routes/authroutes.js";
 
 //aplikację exportujemy żeby plik server mógł ją uruchomić
 export const app = express();

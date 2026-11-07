@@ -19,4 +19,4 @@ await connectDB(env.MONGODB_URI!);
 await ensureUniqueEmail();
 
 //uruchamiamy aplikację na ustawionym porcie
-app.listen(env.PORT, () => console.log(`Serwer: http://localhost:${PORT}`));
+app.listen(env.PORT, () => console.log(`Serwer: http://localhost:${env.PORT}`));
