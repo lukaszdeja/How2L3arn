@@ -73,3 +73,55 @@ export async function register(req: Request, res: Response) {
     authCookie(res, user); //tworzymy ciasteczko (logujemy przy rejestracji)
     res.status(201).json(getUserSimple(user)); //status 201 - utworzono konto, zwracamy dane niewrazliwe uzytkownika
 }
+
+export async function login(req: Request, res: Response) {
+    //walidacja danych logowania
+    const loginBody = loginPattern.safeParse(req.body);
+
+    //w przypadku blednych danych Bad Request
+    if (!loginBody.success) {
+        return res.status(400).json({ error: "Podaj email i hasło"});
+    } 
+
+    //dane z jsona requesta do zmiennych
+    const { email, password } = loginBody.data;
+    
+    //zaczytujemy użytkownika z bazy danych dla podanego maila
+    const user = await userCollection().findOne({ email });
+
+    //sprawdzamy czy istnieje taki user i czy hasło się zgadza
+    const correct = user && (await bcrypt.compare(password, user.passwordHash));
+
+    //przy błędnym mailu lub haśle status 401 - brak uwierzytelnienia
+    if (!correct || !user) {
+        return res.status(401).json({ error: "Nieprawidłowy adres e-mail lub hasło" });
+    }
+
+    //zablokowane konto - 403 - brak autoryzacji
+    if (!user.isActive) {
+        return res.status(403).json({ error: "Twoje konto jest zablokowane" });
+    }
+
+    //tworzymy token i zapisujemy go w ciasteczku
+    authCookie(res, user);
+
+    //zwracamy ok - 200 i niewrazliwe dane uzytkownika
+    res.status(200).json(getUserSimple(user));
+}
+
+export function logout(_req: Request, res: Response) {
+
+    //usuwamy ciasteczko z tokenem
+    res.clearCookie("token", { httpOnly: true, sameSite: "lax", secure: env.COOKIE_SECURE });
+
+    res.status(204).end();
+}
+
+//endpoint /me - ponowne uwierzytelnianie i autoryzacja
+export async function me(req: Request, res: Response) {
+    const user = await usersCollection().findOne({ _id: new ObjectId(req.user!.id) });
+    if (!user || user.isBlocked) { 
+        return res.status(401).json({ error: "Niezalogowano" });
+    }
+    res.json(toPublicUser(user));
+}
