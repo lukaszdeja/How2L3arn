@@ -1,6 +1,6 @@
 import { useState, useEffect, type ReactNode } from "react";
-import { authContext } from "./AuthContext";
-import { authApi, RegisterData } from "../api/auth";
+import { AuthContext } from "./AuthContext";
+import { authApi, type RegisterData } from "../api/auth";
 import type { UserSimple } from "../types/user";
 
 //komponent reactowy przechowujący stan zalogowanego użytkownika i przekazujący go dzieciom
@@ -44,6 +44,6 @@ export function AuthProvider( props: { children: ReactNode }) {
         //przekazuje wszystkie składowe komponentu (obiekt) dzieciom
         <AuthContext.Provider value={{ user, loading, login, register, logout}}>
             {children}
-        </AUthContext.Provider>
+        </AuthContext.Provider>
     );
 }

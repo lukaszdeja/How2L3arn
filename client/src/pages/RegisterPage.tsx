@@ -26,7 +26,7 @@ export function RegisterPage() {
     //bledy zwrocone
     const [error, setError] = useState<string | null>(null);
     //bledy z walidacji z backendu przy konkretnych polach
-    const [fieldErrors, setFieldErros] = useState<Record<string, string[]>>({});
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
     //jedna funkcja do aktualizacji stanu formularza
     //parametr T - funkcję robimy jako generyczną tak żeby klucz musiał dziedziczyć po 
@@ -41,17 +41,17 @@ export function RegisterPage() {
         e.preventDefault();
         setError(null);
         setSubmit(true);
-        setFieldErros({});
+        setFieldErrors({});
         try {
             //próba rejestracji 
             const user = await register(form);
             //przekierowanie na stronę domową
-            navigate(homePathFor[user.role], { replace: true });
+            navigate(homePath[user.role], { replace: true });
         } catch (err) {
             //ustawiamy informacje o błędach
             if (err instanceof ApiError) {
                 setError(err.message);
-                setErrorFields(err.details ?? {}); //jezeli po lewej null to pusty obiekt
+                setFieldErrors(err.details ?? {}); //jezeli po lewej null to pusty obiekt
             } else {
                 setError("Błąd połączenia z serwerem");
             }
@@ -61,7 +61,7 @@ export function RegisterPage() {
     }
     //funkcja która rzutuje błędy z errorFields na paragrafy z komunikatami
     const errorInfo = (field: keyof RegisterData) => {
-        fieldErrors[field]?.map((m) => <p key={m} className="f-error">{m}</p>)
+        return fieldErrors[field]?.map((m) => <p key={m} className="f-error">{m}</p>)
     }
 
     //zawartość strony rejestracji
@@ -87,7 +87,7 @@ export function RegisterPage() {
                 required value={form.surname} onChange={(e) => update("surname", e.target.value)} />
                 {errorInfo("surname")}
                 <label htmlFor="email">Adres email:</label>
-                <input type="emial" id="email" placeholder="Adres email..." autoComplete="email" required
+                <input type="email" id="email" placeholder="Adres email..." autoComplete="email" required
                 value={form.email} onChange={(e) => update("email", e.target.value)} />
                 {errorInfo("email")}
                 <label htmlFor="password">Hasło:</label>

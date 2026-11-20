@@ -21,7 +21,7 @@ export function LoginPage() {
     async function handleLogin(e: FormEvent<HTMLFormElement>) {
         //blokujemy standardowe wysłanie formularza przez przeglądarkę
         e.preventDefault();
-        serError(null);
+        setError(null);
         setSubmit(true);
         try {
             //próba wykonania logowania

@@ -3,9 +3,9 @@
 //context
 import { createContext, useContext } from "react";
 //typ użytkownika
-import { UserSimple } from "../types/user";
+import type { UserSimple } from "../types/user";
 //interface obiektu rejestracji
-import { RegisterData } from "../api/auth";
+import type { RegisterData } from "../api/auth";
 
 //interface który opisuje jakie informacje context udostępnia dzewu komponentów
 export interface authContextValues {
@@ -19,11 +19,11 @@ export interface authContextValues {
 }
 
 //obiekt kontekstu - domyślnie null
-export const authContext = createContext<authContextValues | null>(null);
+export const AuthContext = createContext<authContextValues | null>(null);
 
 //hook który udostępnia context dla dzieci <AuthProvider>, zawęża typ, obcina nulla
 export function useAuth() {
-    const context = useContext(authContext);
+    const context = useContext(AuthContext);
     if (!context) {
         throw new Error("useAuth może być użyte tylko wewnątrz <AuthProvider>");
     }

@@ -20,11 +20,11 @@ export function RequireAuth( props: { roles?: Role[] }) {
 
     //jesli uzytkownik nie jest zalogowany, przekierowujemy na podstrone logowania i modyfikujemy wpis w historii przegladarki
     if (!user) {
-        return <Naviagete to="/login" replace state={{ from: location.pathname }} />;
+        return <Navigate to="/login" replace state={{ from: location.pathname }} />;
     }
 
     //jezeli uzytkownik nie ma wymaganej roli to jest przekierowany na jego domową stronę
-    if (roles && !roles.include(user.role)) {
+    if (roles && !roles.includes(user.role)) {
         return <Navigate to="/" replace />;
     }
 

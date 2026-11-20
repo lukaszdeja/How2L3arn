@@ -29,7 +29,7 @@ export async function request<T>(path: string, options: RequestInit = {}) : Prom
     }
 
     //odczytujemy dane z jsona odpowiedzi - w przypadku błędu - pusty obiekt
-    const data = response.json().catch(() => ({}));
+    const data = await response.json().catch(() => ({}));
 
     //dla statusów 4xx i 5xx rzucamy utworzony błąd
     if (!response.ok) {
