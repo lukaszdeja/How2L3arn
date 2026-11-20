@@ -1,7 +1,7 @@
 //ten plik odpowiada za komunikację z backendem dla autoryzacji i uwierzytelniania
 //importy metody generycznej do żądań oraz typów UserSimple i Role
 import { request } from "./client";
-import { Role, UserSimple } from "../types/user";
+import type { Role, UserSimple } from "../types/user";
 
 //interface obiektu przesyłanego przy zakładaniu konta
 export interface RegisterData {
