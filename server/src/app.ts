@@ -4,6 +4,7 @@
 import express, { type Request, type Response, type NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import { authRouter } from "./routes/authroutes.js";
+import { tutorRouter } from "./routes/tutorroutes.js";
 
 //aplikację exportujemy żeby plik server mógł ją uruchomić
 export const app = express();
@@ -19,8 +20,9 @@ app.get("/api/test", (req, res) => {
     res.json({ok: true}); //w odpowiedzi wysyłamy prostego jsona potwierdzającego że działa
 });
 
-//ustawiamy prefix dla endpointow z authRouter
+//ustawiamy prefixy dla endpointow z routerow
 app.use("/api/auth", authRouter);
+app.use("/api/tutors", tutorRouter);
 
 //blokujemy /api
 app.use("/api", (_req, res) => {

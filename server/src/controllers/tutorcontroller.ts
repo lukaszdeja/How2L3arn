@@ -47,7 +47,6 @@ export async function getTutors(req: Request, res: Response) {
 }
 
 //GET - konkretny korepetytor po ID
-
 export async function getTutor(req: Request, res: Response) {
     //wyciagamy z parametrow GETa
     const tutorId = req.params.id;
@@ -61,8 +60,42 @@ export async function getTutor(req: Request, res: Response) {
     }, { projection: {name: 1, surname: 1, tutorData: 1}});
 
     if (!tutor) {
-        return res.status(404).json({ error: "Nieznaleziono korepetytora"});
+        return res.status(404).json({ error: "Nie znaleziono korepetytora"});
     }
     res.json(getTutorSimple(tutor));
 }
 
+//GET - tutors/me dla korepetytora - wlasny profil
+export async function getMyProfile(req: Request, res: Response) {
+    const tutor = await userCollection().findOne(
+        { _id: new ObjectId(req.user!.id) },
+        { projection: {name: 1, surname: 1, tutorData: 1}}
+    );
+    if (!tutor) {
+        return res.status(404).json({error: "Nie znaleziono profilu"});
+    }
+    res.json(getTutorSimple(tutor));
+}
+
+//PUT - tutors/me - edycja i zapis własnego profilu
+export async function updateMyProfile(req: Request, res: Response) {
+    //parsujemy cialo requesta - walidacja czy jest dobrze wypelnione
+    const profile = tutorDataPattern.safeParse(req.body);
+    if (!profile.success) {
+        return res.status(400).json({error: "Błędny profil korepetytora", details: z.flattenError(profile.error).fieldErrors});
+    }
+
+    //update profilu w bazie danych
+    const updated = await userCollection().findOneAndUpdate(
+        { _id: new ObjectId(req.user!.id) },
+        //set - zastepuje pole
+        { $set: {tutorData: profile.data}},
+        //zwraca dokument po zmianie do updated
+        { returnDocument: "after", projection: { name: 1, surname: 1, tutorData: 1}}
+    );
+
+    if (!updated) {
+        return res.status(404).json({ error: "Nie znaleziono profilu"});
+    }
+    res.json(getTutorSimple(updated));
+}
