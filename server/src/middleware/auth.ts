@@ -4,7 +4,9 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { env } from "../config/checkenv.js";
-import type { Role } from "../models/user.js";
+import { userCollection, type Role } from "../models/user.js";
+import { ObjectId } from "mongodb";
+
 
 //zawartość tokenu JWT
 interface TokenBody {
@@ -13,7 +15,7 @@ interface TokenBody {
 };
 
 //funkcja weryfikująca token JWT - czy istnieje, czy jest prawidłowy i czy nie wygasł - uwierzytelnianie
-export function authenticate(req: Request, res: Response, next: NextFunction) {
+export async function authenticate(req: Request, res: Response, next: NextFunction) {
     //pobranie tokenu
     const token = req.cookies?.token;
 
@@ -22,16 +24,29 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
         return res.status(401).json({ error: "Niezalogowano" })
     }
 
+    let tokenBody: TokenBody;
     try {
         //weryfikacja czy token jest poprawny (podpis) i czy jest aktualny - jeśli nie to wyjątek
-        const tokenBody = jwt.verify(token, env.JWT_SECRET) as TokenBody;
-
-        //udostępnienie danych z tokenu dalszym funkcjom
-        req.user = { id: tokenBody.userId, role: tokenBody.role };
-        next(); //przekazujemy żądanie dalej
+        tokenBody = jwt.verify(token, env.JWT_SECRET) as TokenBody;
     } catch {
-        res.status(401).json({ error: "Token jest nieprawidłowy lub wygasł" });
+        return res.status(401).json({ error: "Token jest nieprawidłowy lub wygasł" });
     }
+
+    //sprawdzamy czy konto uzytkownika jest aktywne czy zablokowane
+    let user = await userCollection().findOne({_id: new ObjectId(tokenBody.userId)}, {
+        projection: { role: 1, isActive: 1}
+    });
+
+    //obslugujemy konta ktorych nie znajdziemy
+    if (!user) {
+        return res.status(401).json({ error: "Konto nie istnieje" });
+    }
+    //a tutaj zablokowane konta - status 403
+    if (!user.isActive) {
+        return res.status(403).json({ error: "Konto jest zablokowane"});
+    }
+    //podmieniamy rolę na właściwą z bazy jeżeli ktoś podmienił sobie role w tokenie
+    req.user = { id: tokenBody.userId, role: user.role };
 }
 
 //celem jest utworzyć middleware (funkcję pośrednią) mechanizmu ograniczania dostępu względem roli 
