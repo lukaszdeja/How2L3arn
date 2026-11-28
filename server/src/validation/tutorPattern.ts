@@ -1,3 +1,4 @@
+//plik sluzacy do walidacji profilow korepetytorow oraz walidacji filtrowania korepetytorow
 import { z } from "zod";
 import {SUBJECTS, LEVELS} from "../models/user.js";
 
