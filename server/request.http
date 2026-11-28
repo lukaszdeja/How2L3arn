@@ -59,3 +59,67 @@ GET {{base}}/auth/me
 
 ### 12. Nieistniejący endpoint → 404 (JSON)
 GET {{base}}/nie-ma-takiego
+
+### --- PROFILE KOREPETYTORÓW ---
+
+### T1. Logowanie jako korepetytor
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "korepetytor@test.pl", "password": "Haslo123!" }
+
+### T2. Mój profil przed uzupełnieniem → 200, tutorProfile: null
+GET {{base}}/tutors/me
+
+### T3. Katalog → 200, pusta lista (nikt nie ma profilu)
+GET {{base}}/tutors
+
+### T4. Błędny profil → 400 z listą błędów
+PUT {{base}}/tutors/me
+Content-Type: application/json
+
+{ "subjects": ["magia"], "levels": [], "pricePerHour": 5, "bio": "" }
+
+### T5. Zapis profilu → 200 z profilem
+PUT {{base}}/tutors/me
+Content-Type: application/json
+
+{ "subjects": ["matematyka", "fizyka"], "levels": ["szkoła podstawowa", "liceum rozszerzenie"], "hourPrice": 80, "description": "Student AGH, uczę od 3 lat." }
+### T6. Katalog → 200, jeden korepetytor (bez emaila!)
+GET {{base}}/tutors
+
+### T7. Filtr: fizyka do 100 zł → 1 wynik
+GET {{base}}/tutors?subject=fizyka&maxPrice=100
+
+### T8. Filtr: chemia → pusta lista
+GET {{base}}/tutors?subject=chemia
+
+### T9. Filtr: za tani → pusta lista
+GET {{base}}/tutors?maxPrice=50
+
+### T10. Błędny filtr → 400
+GET {{base}}/tutors?subject=magia
+
+### T11. Nieprawidłowe id → 400
+GET {{base}}/tutors/abc
+
+### T12. Poprawne id, ale nie korepetytor → 404 (wklej id dowolnego ucznia z bazy)
+GET {{base}}/tutors/000000000000000000000000
+
+### T13. Logowanie jako uczeń
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "uczen@test.pl", "password": "Haslo123!" }
+
+### T14. Uczeń próbuje edytować profil → 403
+PUT {{base}}/tutors/me
+Content-Type: application/json
+
+{ "subjects": ["matematyka"], "levels": ["liceum"], "pricePerHour": 50, "bio": "" }
+
+### T15. Wylogowanie i katalog bez logowania → 200 (endpoint publiczny)
+POST {{base}}/auth/logout
+
+###
+GET {{base}}/tutors

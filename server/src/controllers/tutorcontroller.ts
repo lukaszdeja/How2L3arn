@@ -1,6 +1,6 @@
 //ten plik to kontroler obslugujacy profile korepetytorow - endpointy do ich wyswietlania i modyfikacji
 
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { ObjectId, type Filter } from "mongodb";
 import { z } from "zod";
 import { userCollection, getTutorSimple, type User } from "../models/user.js";

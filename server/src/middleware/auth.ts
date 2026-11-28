@@ -47,6 +47,7 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
     }
     //podmieniamy rolę na właściwą z bazy jeżeli ktoś podmienił sobie role w tokenie
     req.user = { id: tokenBody.userId, role: user.role };
+    next();
 }
 
 //celem jest utworzyć middleware (funkcję pośrednią) mechanizmu ograniczania dostępu względem roli 
